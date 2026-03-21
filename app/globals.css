@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #08080c;
-  --bg-secondary: #101018;
-  --bg-card: #16161f;
+  --bg-purple: #3b0d8e;
+  --bg-primary: #0c0414;
+  --bg-secondary: #120820;
+  --bg-card: #1a0e2d;
   --accent: #771ED2;
   --accent-light: #9b4dea;
   --accent-glow: rgba(119, 30, 210, 0.15);
@@ -33,9 +34,19 @@ html {
 }
 
 body {
-  background: var(--bg-primary);
+  background: var(--bg-purple);
   color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Scrollbar */

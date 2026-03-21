@@ -11,30 +11,7 @@ const fadeUp = (delay: number) => ({
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Blobs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="blob-1 absolute top-[10%] left-[15%] w-[500px] h-[500px] rounded-full opacity-30"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(119,30,210,0.2) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="blob-2 absolute top-[30%] right-[10%] w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(119,30,210,0.15) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="blob-3 absolute bottom-[10%] left-[40%] w-[400px] h-[400px] rounded-full opacity-25"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(155,77,234,0.12) 0%, transparent 70%)",
-          }}
-        />
-      </div>
+      {/* Removed blobs - purple bg + black overlay provides the atmosphere */}
 
       {/* Subtle grid */}
       <div
