@@ -29,7 +29,7 @@ export default function HeroSection() {
           <img
             src="/logo.svg"
             alt=""
-            className="w-36 h-36 mx-auto opacity-80"
+            className="w-20 h-20 md:w-36 md:h-36 mx-auto opacity-80"
           />
         </motion.div>
 
@@ -42,7 +42,7 @@ export default function HeroSection() {
 
         <motion.h1
           {...fadeUp(0.2)}
-          className="font-display text-6xl md:text-8xl lg:text-9xl font-light text-text-primary leading-[0.9] mb-6"
+          className="font-display text-5xl md:text-8xl lg:text-9xl font-light text-text-primary leading-[0.9] mb-6"
         >
           Facet<span className="italic">Logic</span>
         </motion.h1>
@@ -64,7 +64,7 @@ export default function HeroSection() {
 
         <motion.div
           {...fadeUp(0.5)}
-          className="flex items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
         >
           <a
             href="mailto:business@facetlogic.com"
