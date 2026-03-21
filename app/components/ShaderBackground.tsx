@@ -335,7 +335,7 @@ export default function ShaderBackground() {
         return;
       }
       gl!.uniform1f(uTime, prefersReduced ? 0.0 : now * 0.002);
-      gl!.uniform1f(uHeat, 1.6);
+      gl!.uniform1f(uHeat, 0.8);
       gl!.uniform1f(uTurbulence, 1.8);
       gl!.uniform2f(uCenter, 0.0, 0.0);
       gl!.uniform1f(uScale, 0.0);

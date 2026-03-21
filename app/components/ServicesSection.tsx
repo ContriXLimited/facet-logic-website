@@ -48,18 +48,46 @@ const services = [
   },
 ];
 
+const clients = [
+  "Protocol Alpha",
+  "ChainVerse",
+  "Nexus Finance",
+  "Orbital Labs",
+  "Quantum DEX",
+  "Stellar Bridge",
+  "Vortex DAO",
+  "Apex Network",
+  "Prism Exchange",
+  "Lumen Capital",
+];
+
+function ClientLogo({ name }: { name: string }) {
+  return (
+    <div className="flex-shrink-0 w-44 h-16 mx-4 flex items-center justify-center rounded-lg border border-white/10 bg-white/5">
+      <span className="text-xs text-white/30 tracking-wide">
+        {name}
+      </span>
+    </div>
+  );
+}
+
 export default function ServicesSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="services" ref={ref} className="relative py-32 px-6">
-      <div className="max-w-5xl mx-auto">
+    <section
+      id="services"
+      ref={ref}
+      className="relative bg-bg-card h-[calc(100vh-40px)] flex flex-col justify-between py-14"
+    >
+      {/* Header */}
+      <div className="text-center px-6">
         <motion.p
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-xs tracking-[0.3em] uppercase text-accent-light mb-4 text-center font-body"
+          className="text-xs tracking-[0.3em] uppercase text-accent-light mb-3 font-body"
         >
           What We Do
         </motion.p>
@@ -67,32 +95,63 @@ export default function ServicesSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-display text-4xl md:text-5xl font-light text-center mb-20"
+          className="font-display text-3xl md:text-4xl font-light"
         >
           One input. Multiple outcomes.
         </motion.h2>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Cards */}
+      <div className="max-w-5xl mx-auto px-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {services.map((s, i) => (
             <motion.div
               key={s.title}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
-              className="group relative p-8 rounded-2xl border border-border bg-bg-card/50 hover:border-accent/20 hover:bg-bg-card transition-all duration-500"
+              className="group relative p-5 rounded-xl border border-white/5 bg-white/[0.03] hover:border-accent/20 hover:bg-white/[0.06] transition-all duration-500"
             >
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent-light mb-5 group-hover:bg-accent/20 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent-light mb-3 group-hover:bg-accent/20 transition-colors">
                 {s.icon}
               </div>
-              <h3 className="font-display text-xl mb-2 text-text-primary">
+              <h3 className="font-display text-base mb-1 text-text-primary">
                 {s.title}
               </h3>
-              <p className="font-body text-sm text-text-secondary leading-relaxed">
+              <p className="font-body text-xs text-text-secondary leading-relaxed">
                 {s.desc}
               </p>
             </motion.div>
           ))}
         </div>
+      </div>
+
+      {/* Clients marquee */}
+      <div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <p className="text-xs tracking-[0.3em] uppercase text-accent-light mb-5 text-center font-body">
+            Trusted Partners
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="relative overflow-hidden"
+        >
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-bg-card to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-bg-card to-transparent z-10" />
+          <div className="flex animate-marquee">
+            {[...clients, ...clients].map((name, i) => (
+              <ClientLogo key={`${name}-${i}`} name={name} />
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
