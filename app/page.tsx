@@ -3,12 +3,12 @@ import HeroSection from "./components/HeroSection";
 import ServicesSection from "./components/ServicesSection";
 import ClientsSection from "./components/ClientsSection";
 import FooterSection from "./components/FooterSection";
-import PrismBackground from "./components/PrismBackground";
+import ShaderBackground from "./components/ShaderBackground";
 
 export default function Home() {
   return (
     <main>
-      <PrismBackground />
+      <ShaderBackground />
       <Navbar />
       <HeroSection />
       <ServicesSection />

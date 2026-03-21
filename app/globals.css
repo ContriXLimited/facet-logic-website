@@ -34,19 +34,9 @@ html {
 }
 
 body {
-  background: var(--bg-purple);
+  background: #050208;
   color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
-  position: relative;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  pointer-events: none;
-  z-index: -1;
 }
 
 /* Scrollbar */
