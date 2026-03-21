@@ -8,7 +8,7 @@ export default function FooterSection() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <footer ref={ref} className="relative bg-[#f0e8f8] text-[#1a0a2e] overflow-hidden">
+    <footer ref={ref} className="relative bg-[#d2baf5] text-[#1a0a2e] overflow-hidden">
       {/* Large brand name */}
       <div className="relative min-h-[60vh] flex items-center justify-center px-6">
         <motion.div
@@ -23,7 +23,7 @@ export default function FooterSection() {
             <img
               src="/logo.svg"
               alt=""
-              className="absolute -top-[2vw] -right-[5vw] w-[5vw] h-[5vw] max-w-[70px] max-h-[70px] opacity-90"
+              className="absolute -top-[3vw] -right-[8vw] md:-right-[5vw] w-[6vw] h-[6vw] min-w-[28px] min-h-[28px] max-w-[70px] max-h-[70px] opacity-90"
               style={{ filter: "brightness(0)" }}
             />
           </h2>

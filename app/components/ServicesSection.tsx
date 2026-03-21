@@ -63,8 +63,8 @@ const clients = [
 
 function ClientLogo({ name }: { name: string }) {
   return (
-    <div className="flex-shrink-0 w-44 h-16 mx-4 flex items-center justify-center rounded-lg border border-white/10 bg-white/5">
-      <span className="text-xs text-white/30 tracking-wide">
+    <div className="flex-shrink-0 w-32 md:w-44 h-14 md:h-16 mx-3 md:mx-4 flex items-center justify-center rounded-lg border border-white/10 bg-white/5">
+      <span className="text-[10px] md:text-xs text-white/30 tracking-wide">
         {name}
       </span>
     </div>
@@ -79,7 +79,7 @@ export default function ServicesSection() {
     <section
       id="services"
       ref={ref}
-      className="relative bg-bg-card h-[calc(100vh-40px)] flex flex-col justify-between py-14"
+      className="relative bg-bg-card min-h-screen h-[calc(140vh)] lg:h-[calc(100vh-40px)] flex flex-col justify-evenly py-10 md:py-14"
     >
       {/* Header */}
       <div className="text-center px-6">

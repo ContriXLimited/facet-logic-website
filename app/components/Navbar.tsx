@@ -20,12 +20,13 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Facet Logic" className="w-12 h-12" />
-          <span className="font-display text-xl tracking-wide text-text-primary">
+          <img src="/logo.svg" alt="Facet Logic" className="w-8 h-8 md:w-12 md:h-12" />
+          <span className="font-display text-base md:text-xl tracking-wide text-text-primary">
             Facet<span className="italic">Logic</span>
           </span>
         </div>
 
+        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
           <a
             href="#services"
@@ -46,6 +47,13 @@ export default function Navbar() {
             Contact Us
           </a>
         </div>
+        {/* Mobile contact */}
+        <a
+          href="mailto:business@facetlogic.com"
+          className="md:hidden text-xs px-4 py-1.5 rounded-full border border-accent/50 text-accent-light"
+        >
+          Contact
+        </a>
       </div>
     </nav>
   );
