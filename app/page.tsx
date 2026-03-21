@@ -6,12 +6,16 @@ import ShaderBackground from "./components/ShaderBackground";
 
 export default function Home() {
   return (
-    <main>
+    <main className="relative">
       <ShaderBackground />
-      <Navbar />
-      <HeroSection />
-      <ServicesSection />
-      <FooterSection />
+      {/* Dark overlay on top of shader */}
+      <div className="fixed inset-0 z-[1] bg-black/60 pointer-events-none" />
+      <div className="relative z-10">
+        <Navbar />
+        <HeroSection />
+        <ServicesSection />
+        <FooterSection />
+      </div>
     </main>
   );
 }

@@ -363,7 +363,7 @@ export default function ShaderBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full -z-10"
+      className="fixed inset-0 w-full h-full z-0"
       style={{ pointerEvents: "auto" }}
     />
   );
