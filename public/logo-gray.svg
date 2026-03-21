@@ -5,8 +5,8 @@
     </clipPath>
   </defs>
   <!-- background removed -->
-  <polygon points="200,50 50,309.8 200,223.2" fill="none" stroke="white" stroke-width="3" stroke-linejoin="round"/>
-  <polygon points="200,50 200,223.2 350,309.8" fill="none" stroke="white" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="200,50 50,309.8 200,223.2" fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+  <polygon points="200,50 200,223.2 350,309.8" fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
   <g clip-path="url(#btClip)">
     <polygon points="200,223.2 416.5,348.2 414.3,352.0" fill="#4e4e4e"/>
     <polygon points="200,223.2 414.3,352.0 412.0,355.7" fill="#525252"/>
@@ -129,6 +129,6 @@
     <polygon points="200,223.2 -12.0,355.7 -14.3,352.0" fill="#404040"/>
     <polygon points="200,223.2 -14.3,352.0 -16.5,348.2" fill="#404040"/>
   </g>
-  <polygon points="50,309.8 350,309.8 200,223.2" fill="none" stroke="white" stroke-width="3" stroke-linejoin="round"/>
-  <polygon points="200,50 50,309.8 350,309.8" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="50,309.8 350,309.8 200,223.2" fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+  <polygon points="200,50 50,309.8 350,309.8" fill="none" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>
 </svg>
