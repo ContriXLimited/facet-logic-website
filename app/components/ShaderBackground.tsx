@@ -8,10 +8,8 @@ void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
 const fragSrc = `precision highp float;
 uniform float u_time;
 uniform vec2 u_res;
-uniform float u_heat;
-uniform float u_turbulence;
-uniform vec2 u_center;
-uniform float u_scale;
+uniform float u_coronaSize;
+uniform float u_rayIntensity;
 uniform vec2 u_mouse;
 
 #define PI 3.14159265359
@@ -21,12 +19,6 @@ float hash(vec2 p) {
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
   p3 += dot(p3, p3.yzx + 33.33);
   return fract((p3.x + p3.y) * p3.z);
-}
-
-vec2 hash2(vec2 p) {
-  vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.xx + p3.yz) * p3.zy);
 }
 
 float vnoise(vec2 p) {
@@ -40,210 +32,172 @@ float vnoise(vec2 p) {
   );
 }
 
-vec3 noised(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-  vec2 du = 30.0 * f * f * (f * (f - 2.0) + 1.0);
-  float a = hash(i);
-  float b = hash(i + vec2(1.0, 0.0));
-  float c = hash(i + vec2(0.0, 1.0));
-  float d = hash(i + vec2(1.0, 1.0));
-  float val = a + (b - a) * u.x + (c - a) * u.y + (a - b - c + d) * u.x * u.y;
-  vec2 deriv = du * (vec2(b - a + (a - b - c + d) * u.y, c - a + (a - b - c + d) * u.x));
-  return vec3(val, deriv);
-}
-
-float fbm(vec2 p, int octaves) {
+float fbm3(vec2 p) {
   float v = 0.0, a = 0.5;
   mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
-  for (int i = 0; i < 8; i++) {
-    if (i >= octaves) break;
+  for (int i = 0; i < 3; i++) {
     v += a * vnoise(p);
-    p = rot * p * 2.05 + vec2(1.7, 9.2);
+    p = rot * p * 2.1 + vec2(1.7, 9.2);
     a *= 0.5;
   }
   return v;
 }
 
-vec3 fbmd(vec2 p, int octaves) {
+float fbm4(vec2 p) {
   float v = 0.0, a = 0.5;
-  vec2 d = vec2(0.0);
-  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
-  for (int i = 0; i < 8; i++) {
-    if (i >= octaves) break;
-    vec3 n = noised(p);
-    v += a * n.x;
-    d += a * n.yz;
-    p = rot * p * 2.05 + vec2(1.7, 9.2);
-    a *= 0.5;
-  }
-  return vec3(v, d);
-}
-
-float ridged(vec2 p, int octaves) {
-  float v = 0.0, a = 0.5;
-  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
-  for (int i = 0; i < 6; i++) {
-    if (i >= octaves) break;
-    float n = vnoise(p);
-    n = 1.0 - abs(n * 2.0 - 1.0);
-    n = n * n;
-    v += a * n;
-    p = rot * p * 2.1 + vec2(3.2, 1.3);
-    a *= 0.5;
+  mat2 rot = mat2(0.866, 0.5, -0.5, 0.866);
+  for (int i = 0; i < 4; i++) {
+    v += a * vnoise(p);
+    p = rot * p * 2.05 + vec2(3.1, 7.4);
+    a *= 0.48;
   }
   return v;
-}
-
-// Purple color mapping
-vec3 tempColor(float temp, float luminosityVar) {
-  vec3 c0 = vec3(0.02, 0.01, 0.04);
-  vec3 c1 = vec3(0.05, 0.02, 0.10);
-  vec3 c2 = vec3(0.12, 0.04, 0.22);
-  vec3 c3 = vec3(0.30, 0.08, 0.55);
-  vec3 c4 = vec3(0.47, 0.12, 0.82);
-  vec3 c5 = vec3(0.65, 0.30, 1.2);
-  vec3 c6 = vec3(0.85, 0.55, 1.6);
-  vec3 c7 = vec3(1.5, 1.2, 2.5);
-
-  vec3 col;
-  if (temp < 0.12) {
-    col = mix(c0, c1, temp / 0.12);
-  } else if (temp < 0.25) {
-    col = mix(c1, c2, (temp - 0.12) / 0.13);
-  } else if (temp < 0.38) {
-    col = mix(c2, c3, (temp - 0.25) / 0.13);
-  } else if (temp < 0.52) {
-    col = mix(c3, c4, (temp - 0.38) / 0.14);
-  } else if (temp < 0.68) {
-    col = mix(c4, c5, (temp - 0.52) / 0.16);
-  } else if (temp < 0.85) {
-    col = mix(c5, c6, (temp - 0.68) / 0.17);
-  } else {
-    col = mix(c6, c7, (temp - 0.85) / 0.15);
-  }
-
-  col *= 1.0 + luminosityVar * 0.25;
-  return col;
 }
 
 void main() {
-  vec2 origin = u_scale > 0.0 ? u_center : vec2(0.5);
-  float sc = u_scale > 0.0 ? u_scale : 1.0;
-  vec2 uv = (gl_FragCoord.xy - u_res * origin) / (min(u_res.x, u_res.y) * sc);
+  vec2 uv = (gl_FragCoord.xy - u_res * 0.5) / min(u_res.x, u_res.y);
   float t = u_time;
-  float heat = u_heat;
-  float turb = u_turbulence;
+  float coronaSize = u_coronaSize;
+  float rayIntensity = u_rayIntensity;
 
-  float dist = length(uv);
+  float r = length(uv);
+  float a = atan(uv.y, uv.x);
 
-  float mouseHeat = 0.0;
+  // Deep space background - deep purple tint
+  vec3 col = vec3(0.008, 0.003, 0.015);
+
+  // Star field
+  vec2 starGrid = floor(gl_FragCoord.xy / 3.0);
+  float starHash = hash(starGrid * 0.73 + vec2(13.7, 29.3));
+  float starBright = step(0.997, starHash);
+  float twinkle = sin(t * 1.5 + starHash * 100.0) * 0.4 + 0.6;
+  starBright *= twinkle * hash(starGrid * 1.31 + vec2(7.1, 3.9));
+  starBright *= smoothstep(0.15, 0.45, r);
+  col += vec3(0.7, 0.6, 0.95) * starBright * 0.6;
+
+  // Eclipse disc
+  float discRadius = 0.15;
+  float chromoRadius = discRadius + 0.008;
+
+  float rotAngle = a + t * 0.05;
+
+  // Corona rays
+  float ray1 = fbm3(vec2(rotAngle * 3.0, r * 4.0 - t * 0.08));
+  float ray2 = fbm3(vec2(rotAngle * 7.0 + 5.0, r * 6.0 - t * 0.12));
+  float ray3 = fbm4(vec2(rotAngle * 13.0 + 10.0, r * 8.0 - t * 0.18));
+  float rays = ray1 * 0.5 + ray2 * 0.3 + ray3 * 0.2;
+
+  // Angular asymmetry
+  float asymmetry = 0.7 + 0.3 * sin(a * 2.0 + 0.5) * sin(a * 3.0 + t * 0.02);
+  asymmetry += 0.15 * sin(a * 5.0 + 1.7);
+  rays *= asymmetry;
+
+  // Radial falloff
+  float coronaOuter = discRadius + 0.35 * coronaSize;
+  float radialFalloff = smoothstep(coronaOuter, discRadius + 0.02, r);
+  radialFalloff *= smoothstep(discRadius - 0.01, discRadius + 0.03, r);
+
+  float rayReach = discRadius + 0.6 * coronaSize;
+  float rayFalloff = smoothstep(rayReach, discRadius + 0.03, r);
+  rayFalloff *= smoothstep(discRadius - 0.01, discRadius + 0.03, r);
+
+  // Purple corona colors
+  float colorMix = smoothstep(discRadius, coronaOuter, r);
+  vec3 innerColor = vec3(0.75, 0.45, 1.0);
+  vec3 outerColor = vec3(0.45, 0.12, 0.82);
+  vec3 coronaColor = mix(innerColor, outerColor, colorMix);
+
+  // Corona glow
+  float coronaGlow = radialFalloff * (0.4 + rays * 0.6);
+  col += coronaColor * coronaGlow * 1.2 * rayIntensity;
+
+  // Extended ray streaks
+  float rayStreak = rayFalloff * pow(rays, 1.5) * 0.8;
+  col += mix(coronaColor, outerColor, 0.5) * rayStreak * rayIntensity;
+
+  // Chromosphere ring
+  float chromoDist = abs(r - chromoRadius);
+  float chromo = exp(-chromoDist * chromoDist / 0.00008);
+  float chromoNoise = fbm3(vec2(rotAngle * 10.0, t * 0.2));
+  chromo *= 0.7 + chromoNoise * 0.5;
+  vec3 chromoColor = vec3(0.85, 0.6, 1.0);
+  col += chromoColor * chromo * 2.5 * rayIntensity;
+
+  // Hot inner edge
+  float innerEdge = exp(-pow((r - discRadius) * 80.0, 2.0));
+  innerEdge *= smoothstep(discRadius - 0.02, discRadius + 0.005, r);
+  col += vec3(0.9, 0.75, 1.0) * innerEdge * 3.0;
+
+  // Solar wind streaks
+  float windA = floor((a + t * 0.02) * 80.0);
+  float windR2 = floor((r - t * 0.06) * 100.0);
+  float wind = hash(vec2(windA, windR2));
+  wind = smoothstep(0.95, 1.0, wind);
+  float windFade = smoothstep(discRadius, discRadius + 0.05, r);
+  windFade *= smoothstep(rayReach + 0.08, discRadius + 0.06, r);
+  col += vec3(0.7, 0.5, 1.0) * wind * windFade * 0.06 * rayIntensity;
+
+  // Bloom
+  float bloomDist = max(r - discRadius, 0.0);
+  float bloom = exp(-bloomDist * 2.5);
+  bloom *= smoothstep(discRadius - 0.05, discRadius + 0.01, r);
+  col += vec3(0.25, 0.1, 0.4) * bloom * 0.25 * rayIntensity;
+
+  float wideBloom = exp(-r * 1.2) * 0.15;
+  col += vec3(0.18, 0.06, 0.3) * wideBloom * rayIntensity;
+
+  // Horizontal lens streak
+  float streak = exp(-uv.y * uv.y * 80.0) * exp(-abs(r - discRadius) * 5.0);
+  streak *= smoothstep(discRadius - 0.02, discRadius + 0.05, r);
+  col += vec3(0.4, 0.2, 0.6) * streak * 0.08 * rayIntensity;
+
+  // Dark moon disc
+  float disc = smoothstep(discRadius + 0.003, discRadius - 0.003, r);
+  col *= 1.0 - disc;
+  float lunarNoise = vnoise(uv * 40.0) * 0.008;
+  col += vec3(lunarNoise * 0.3, lunarNoise * 0.2, lunarNoise * 0.5) * disc;
+
+  // Diamond ring effect
+  float diamondAngle = sin(t * 0.02) * PI;
   if (u_mouse.x > 0.0) {
-    vec2 mUV = (u_mouse - u_res * origin) / (min(u_res.x, u_res.y) * sc);
-    float mDist = length(uv - mUV);
-    mouseHeat = exp(-mDist * mDist * 4.0);
+    vec2 mUV = (u_mouse - u_res * 0.5) / min(u_res.x, u_res.y);
+    diamondAngle = atan(mUV.y, mUV.x);
+  }
+  vec2 diamondDir = vec2(cos(diamondAngle), sin(diamondAngle));
+  float diamondDot = dot(normalize(uv), diamondDir);
+  float diamond = smoothstep(0.96, 1.0, diamondDot);
+  float diamondR = smoothstep(discRadius + 0.025, discRadius, r);
+  diamondR *= smoothstep(discRadius - 0.015, discRadius, r);
+  float diamondGlow = diamond * diamondR;
+  float diamondBoost = u_mouse.x > 0.0 ? 2.5 : 1.5;
+  col += vec3(0.9, 0.75, 1.0) * diamondGlow * diamondBoost * rayIntensity;
+
+  float dBloomR = exp(-pow((r - discRadius) * 20.0, 2.0));
+  float dBloomA = smoothstep(0.92, 1.0, diamondDot);
+  col += vec3(0.35, 0.15, 0.5) * dBloomR * dBloomA * (diamondBoost * 0.4) * rayIntensity;
+
+  // Mouse corona pull
+  if (u_mouse.x > 0.0) {
+    float angleToCursor = dot(normalize(uv), diamondDir);
+    float coronaPull = smoothstep(0.3, 1.0, angleToCursor);
+    coronaPull *= smoothstep(discRadius, discRadius + 0.25, r);
+    coronaPull *= smoothstep(0.6, discRadius + 0.05, r);
+    col += vec3(0.5, 0.25, 0.8) * coronaPull * 0.15 * rayIntensity;
   }
 
-  float angle = atan(uv.y, uv.x);
-  float ca = cos(angle);
-  float sa = sin(angle);
+  // Film grain
+  float grain = (hash(gl_FragCoord.xy + fract(t * 43.0) * 1000.0) - 0.5) * 0.015;
+  col += grain;
 
-  float turb1 = fbm(vec2(ca * 1.5 + sa * 0.7 + t * 0.08, dist * 2.0 - t * 0.05) * 1.8, 5) * turb;
-  float turb2 = fbm(vec2(ca * 3.0 - sa * 1.5 - t * 0.12, dist * 3.5 + t * 0.07) * 2.5 + vec2(50.0, 30.0), 4) * turb;
-  float turb3 = fbm(vec2(ca * 5.0 + sa * 2.5 + t * 0.2, dist * 5.0 - t * 0.15) * 3.0 + vec2(100.0, 70.0), 3) * turb;
+  // Vignette
+  float vig = 1.0 - smoothstep(0.3, 1.1, r);
+  col *= 0.7 + 0.3 * vig;
 
-  float turbTotal = turb1 * 0.45 + turb2 * 0.35 + turb3 * 0.2;
-
-  float deformStrength = smoothstep(0.0, 0.3, dist) * smoothstep(0.9, 0.4, dist);
-  float deformedDist = dist + (turbTotal - 0.5) * 0.35 * deformStrength;
-
-  float pulse = sin(t * 0.15) * 0.04 + sin(t * 0.23 + 1.7) * 0.03 + sin(t * 0.37 + 3.1) * 0.02;
-  deformedDist -= pulse * heat;
-
-  float tempRange = 0.65 / heat;
-  float temp = 1.0 - smoothstep(0.0, tempRange, deformedDist);
-  float coreBoost = (1.0 - smoothstep(0.0, 0.15 / heat, deformedDist));
-  temp = temp * 0.7 + coreBoost * 0.3;
-  temp += mouseHeat * 0.6;
-  temp = clamp(temp, 0.0, 1.0);
-
-  float lumVar = fbm(uv * 4.0 + t * 0.06, 3) * 2.0 - 1.0;
-  vec3 col = tempColor(temp, lumVar);
-
-  vec3 shimmerNoise = fbmd(uv * 8.0 + vec2(t * 0.3, t * 0.25), 4);
-  float shimmerWave = shimmerNoise.x;
-  vec2 shimmerDir = shimmerNoise.yz;
-
-  float shimmerStrength = temp * temp * turb;
-  float shimmerRipple = dot(shimmerDir, vec2(0.7, 0.7));
-  shimmerRipple = shimmerRipple * shimmerRipple * shimmerStrength;
-  col += col * shimmerRipple * 0.4;
-
-  float shimmerHighlight = pow(max(shimmerWave, 0.0), 4.0) * temp * temp;
-  col += vec3(0.6, 0.3, 1.0) * shimmerHighlight * 0.2 * heat;
-
-  float veins1 = ridged(uv * 5.0 + vec2(t * 0.06, -t * 0.04), 4);
-  float veins2 = ridged(uv * 8.0 + vec2(-t * 0.08, t * 0.05) + vec2(20.0, 40.0), 3);
-  float veins3 = ridged(uv * 13.0 + vec2(t * 0.1, t * 0.07) + vec2(60.0, 90.0), 2);
-
-  float veins = veins1 * 0.5 + veins2 * 0.35 + veins3 * 0.15;
-  veins = smoothstep(0.3, 0.75, veins);
-  veins = pow(veins, 2.0);
-
-  float veinMask = smoothstep(0.15, 0.5, temp) * smoothstep(1.0, 0.7, temp);
-  float veinIntensity = veins * veinMask * 0.7 * heat;
-
-  vec3 veinColor = vec3(0.6, 0.3, 1.0);
-  veinColor = mix(veinColor, vec3(0.45, 0.15, 0.9), veins2);
-  col += veinColor * veinIntensity;
-
-  float emberScale = 18.0;
-  vec2 emberUV = uv * emberScale;
-  emberUV.y -= t * 0.4;
-  emberUV.x += sin(t * 0.3 + uv.y * 4.0) * 0.15;
-
-  vec2 emberId = floor(emberUV);
-  vec2 emberF = fract(emberUV) - 0.5;
-
-  float embers = 0.0;
-  for (int ey = -1; ey <= 1; ey++) {
-    for (int ex = -1; ex <= 1; ex++) {
-      vec2 neighbor = vec2(float(ex), float(ey));
-      vec2 cellId = emberId + neighbor;
-      vec2 rnd = hash2(cellId);
-      if (rnd.x > 0.08) continue;
-      vec2 emberPos = neighbor + rnd - 0.5;
-      float emberDist = length(emberF - emberPos);
-      float phase = hash(cellId + vec2(77.0, 33.0));
-      float life = fract(phase + t * 0.08);
-      float brightness = sin(life * PI) * sin(life * PI);
-      brightness *= 0.5 + 0.5 * sin(t * 5.0 + phase * TAU);
-      float glow = smoothstep(0.08, 0.0, emberDist);
-      float core = smoothstep(0.025, 0.0, emberDist) * 2.0;
-      embers += (glow + core) * brightness;
-    }
-  }
-
-  float emberTemp = temp;
-  float emberMask = smoothstep(0.2, 0.5, emberTemp);
-  embers *= emberMask;
-  vec3 emberColor = vec3(0.7, 0.4, 1.0);
-  col += emberColor * embers * 0.12 * heat;
-
-  float grainSeed = hash(gl_FragCoord.xy + fract(t * 43.758) * 1000.0);
-  float grain = (grainSeed - 0.5);
-  float transitionMask = smoothstep(0.1, 0.35, temp) * smoothstep(0.7, 0.35, temp);
-  float grainStrength = 0.012 + transitionMask * 0.018;
-  vec3 grainColor = vec3(grain * 0.8, grain * 0.5, grain * 1.1);
-  col += grainColor * grainStrength;
-
-  float vig = length(uv * 1.1);
-  float vignette = 1.0 - smoothstep(0.5, 1.3, vig) * 0.3;
-  col *= vignette;
-
-  col = col * (2.51 * col + 0.03) / (col * (2.43 * col + 0.59) + 0.14);
+  // Tone mapping
   col = max(col, vec3(0.0));
+  col = col / (1.0 + col * 0.3);
+  float lum = dot(col, vec3(0.299, 0.587, 0.114));
+  col = mix(col, col * vec3(0.95, 0.85, 1.06), smoothstep(0.05, 0.0, lum) * 0.2);
 
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -270,6 +224,9 @@ export default function ShaderBackground() {
       const s = gl!.createShader(type)!;
       gl!.shaderSource(s, src);
       gl!.compileShader(s);
+      if (!gl!.getShaderParameter(s, gl!.COMPILE_STATUS)) {
+        console.error("Shader compile error:", gl!.getShaderInfoLog(s));
+      }
       return s;
     }
 
@@ -277,6 +234,9 @@ export default function ShaderBackground() {
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, vertSrc));
     gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fragSrc));
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("Program link error:", gl.getProgramInfoLog(prog));
+    }
     gl.useProgram(prog);
 
     const buf = gl.createBuffer();
@@ -292,19 +252,19 @@ export default function ShaderBackground() {
 
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_res");
-    const uHeat = gl.getUniformLocation(prog, "u_heat");
-    const uTurbulence = gl.getUniformLocation(prog, "u_turbulence");
-    const uCenter = gl.getUniformLocation(prog, "u_center");
-    const uScale = gl.getUniformLocation(prog, "u_scale");
+    const uCoronaSize = gl.getUniformLocation(prog, "u_coronaSize");
+    const uRayIntensity = gl.getUniformLocation(prog, "u_rayIntensity");
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
 
     let mouseX = -1;
     let mouseY = -1;
     let running = true;
 
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
     const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = canvas.clientHeight - e.clientY;
+      mouseX = e.clientX * dpr;
+      mouseY = (canvas.clientHeight - e.clientY) * dpr;
     };
     const onLeave = () => {
       mouseX = -1;
@@ -314,9 +274,8 @@ export default function ShaderBackground() {
     canvas.addEventListener("mouseleave", onLeave);
 
     function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      const w = Math.round(canvas!.clientWidth * dpr * 0.5);
-      const h = Math.round(canvas!.clientHeight * dpr * 0.5);
+      const w = Math.round(canvas!.clientWidth * dpr);
+      const h = Math.round(canvas!.clientHeight * dpr);
       if (canvas!.width !== w || canvas!.height !== h) {
         canvas!.width = w;
         canvas!.height = h;
@@ -334,11 +293,9 @@ export default function ShaderBackground() {
         animId = requestAnimationFrame(render);
         return;
       }
-      gl!.uniform1f(uTime, prefersReduced ? 0.0 : now * 0.002);
-      gl!.uniform1f(uHeat, 0.8);
-      gl!.uniform1f(uTurbulence, 1.8);
-      gl!.uniform2f(uCenter, 0.0, 0.0);
-      gl!.uniform1f(uScale, 0.0);
+      gl!.uniform1f(uTime, prefersReduced ? 0.0 : now * 0.001);
+      gl!.uniform1f(uCoronaSize, 1.0);
+      gl!.uniform1f(uRayIntensity, 1.0);
       gl!.uniform2f(uMouse, mouseX, mouseY);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
       animId = requestAnimationFrame(render);
