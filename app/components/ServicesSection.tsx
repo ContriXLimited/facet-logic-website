@@ -49,27 +49,10 @@ const services = [
 ];
 
 const clients = [
-  "Protocol Alpha",
-  "ChainVerse",
-  "Nexus Finance",
-  "Orbital Labs",
-  "Quantum DEX",
-  "Stellar Bridge",
-  "Vortex DAO",
-  "Apex Network",
-  "Prism Exchange",
-  "Lumen Capital",
+  { name: "0G", logo: "/clients/0g.svg" },
+  { name: "HackQuest", logo: "/clients/hackquest.svg" },
+  { name: "amber.ac", logo: "/clients/amber.svg" },
 ];
-
-function ClientLogo({ name }: { name: string }) {
-  return (
-    <div className="flex-shrink-0 w-32 md:w-44 h-14 md:h-16 mx-3 md:mx-4 flex items-center justify-center rounded-lg border border-white/10 bg-white/5">
-      <span className="text-[10px] md:text-xs text-white/30 tracking-wide">
-        {name}
-      </span>
-    </div>
-  );
-}
 
 export default function ServicesSection() {
   const ref = useRef(null);
@@ -126,7 +109,7 @@ export default function ServicesSection() {
         </div>
       </div>
 
-      {/* Clients marquee */}
+      {/* Clients & Partners */}
       <div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -134,7 +117,7 @@ export default function ServicesSection() {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <p className="text-xs tracking-[0.3em] uppercase text-accent-light mb-5 text-center font-body">
-            Trusted Partners
+            Clients &amp; Partners
           </p>
         </motion.div>
 
@@ -142,15 +125,24 @@ export default function ServicesSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="relative overflow-hidden"
+          className="flex items-center justify-center gap-8 md:gap-14 px-6"
         >
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-bg-card to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-bg-card to-transparent z-10" />
-          <div className="flex animate-marquee">
-            {[...clients, ...clients].map((name, i) => (
-              <ClientLogo key={`${name}-${i}`} name={name} />
-            ))}
-          </div>
+          {clients.map((c, i) => (
+            <motion.div
+              key={c.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
+              className="flex items-center justify-center h-12 md:h-14"
+            >
+              <img
+                src={c.logo}
+                alt={c.name}
+                className="h-8 md:h-10 w-auto object-contain opacity-50 hover:opacity-80 transition-opacity"
+                style={{ filter: "brightness(0) invert(1)" }}
+              />
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
