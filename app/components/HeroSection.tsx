@@ -10,7 +10,7 @@ const fadeUp = (delay: number) => ({
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden snap-start">
       {/* Removed blobs - purple bg + black overlay provides the atmosphere */}
 
       {/* Subtle grid */}

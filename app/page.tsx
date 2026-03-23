@@ -10,7 +10,7 @@ export default function Home() {
       <ShaderBackground />
       {/* Dark overlay on top of shader */}
       <div className="fixed inset-0 z-[1] bg-black/60 pointer-events-none" />
-      <div className="relative z-10">
+      <div className="relative z-10 h-screen overflow-y-auto snap-y snap-mandatory">
         <Navbar />
         <HeroSection />
         <ServicesSection />

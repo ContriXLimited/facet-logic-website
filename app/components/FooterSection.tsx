@@ -8,7 +8,7 @@ export default function FooterSection() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <footer ref={ref} className="relative bg-[#d2baf5] text-[#1a0a2e] overflow-hidden">
+    <footer ref={ref} className="relative bg-[#d2baf5] text-[#1a0a2e] overflow-hidden snap-start">
       {/* Large brand name */}
       <div className="relative min-h-[60vh] flex items-center justify-center px-6">
         <motion.div

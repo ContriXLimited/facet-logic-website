@@ -62,7 +62,7 @@ export default function ServicesSection() {
     <section
       id="services"
       ref={ref}
-      className="relative bg-bg-card min-h-screen h-[calc(140vh)] lg:h-[calc(100vh-40px)] flex flex-col justify-evenly py-10 md:py-14"
+      className="relative bg-bg-card min-h-screen h-[calc(140vh)] lg:h-[calc(100vh-40px)] flex flex-col justify-evenly py-10 md:py-14 snap-start"
     >
       {/* Header */}
       <div className="text-center px-6">
