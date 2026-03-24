@@ -41,7 +41,7 @@ export default function Navbar() {
             Clients
           </a>
           <a
-            href="mailto:business@facetlogic.com"
+            href="mailto:Info@facetlogic.tech"
             className="text-sm px-5 py-2 rounded-full border border-accent/50 text-accent-light hover:bg-accent/10 transition-all"
           >
             Contact Us
@@ -49,7 +49,7 @@ export default function Navbar() {
         </div>
         {/* Mobile contact */}
         <a
-          href="mailto:business@facetlogic.com"
+          href="mailto:Info@facetlogic.tech"
           className="md:hidden text-xs px-4 py-1.5 rounded-full border border-accent/50 text-accent-light"
         >
           Contact

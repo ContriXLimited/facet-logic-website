@@ -33,12 +33,6 @@ export default function HeroSection() {
           />
         </motion.div>
 
-        <motion.p
-          {...fadeUp(0.1)}
-          className="text-xs tracking-[0.3em] uppercase text-accent-light mb-6 font-body"
-        >
-          Enterprise Solutions
-        </motion.p>
 
         <motion.h1
           {...fadeUp(0.2)}
@@ -51,15 +45,14 @@ export default function HeroSection() {
           {...fadeUp(0.3)}
           className="font-display text-xl md:text-2xl italic text-text-secondary mb-8"
         >
-          Decompose complexity. Deliver clarity.
+          One input. Multiple outcomes.
         </motion.p>
 
         <motion.p
           {...fadeUp(0.4)}
           className="font-body text-sm md:text-base text-text-secondary max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Strategic infrastructure and liquidity solutions for token projects.
-          We turn market complexity into sustainable growth.
+          From Infra to real world solution
         </motion.p>
 
         <motion.div
@@ -67,7 +60,7 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
         >
           <a
-            href="mailto:business@facetlogic.com"
+            href="mailto:Info@facetlogic.tech"
             className="px-8 py-3 rounded-full bg-accent text-white text-sm font-medium hover:bg-accent-light transition-colors"
           >
             Get Started

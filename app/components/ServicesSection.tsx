@@ -5,8 +5,8 @@ import { useRef } from "react";
 
 const services = [
   {
-    title: "Market Making",
-    desc: "Deep liquidity and tight spreads across centralized and decentralized exchanges.",
+    title: "OpenWhale Framework",
+    desc: "A production-ready trading agent framework that reduces execution cost and decision latency.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
         <path d="M3 17l4-4 4 4 4-8 4 4h2" strokeLinecap="round" strokeLinejoin="round" />
@@ -14,30 +14,8 @@ const services = [
     ),
   },
   {
-    title: "Exchange Listing",
-    desc: "End-to-end support for CEX and DEX listings, from strategy to execution.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    title: "Token Strategy",
-    desc: "Tokenomics design, launch planning, and sustainable growth frameworks.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 3" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: "Advisory",
-    desc: "Strategic guidance from seasoned professionals across DeFi, CeFi, and TradFi.",
+    title: "White-labeled Volume Growth Engine",
+    desc: "Increase PerpDex daily volume, user engagement, and retention through coordinated agent execution and strategy orchestration.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
         <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -86,7 +64,7 @@ export default function ServicesSection() {
 
       {/* Cards */}
       <div className="max-w-5xl mx-auto px-6 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
           {services.map((s, i) => (
             <motion.div
               key={s.title}
