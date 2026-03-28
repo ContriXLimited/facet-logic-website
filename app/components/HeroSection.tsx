@@ -45,14 +45,14 @@ export default function HeroSection() {
           {...fadeUp(0.3)}
           className="font-display text-xl md:text-2xl italic text-text-secondary mb-8"
         >
-          One input. Multiple outcomes.
+          Onboarding the next billion agents for value creation
         </motion.p>
 
         <motion.p
           {...fadeUp(0.4)}
           className="font-body text-sm md:text-base text-text-secondary max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          From Infra to real world solution
+          Building Agent Economy Infrastructure & Solutions for Pioneer Businesses
         </motion.p>
 
         <motion.div
